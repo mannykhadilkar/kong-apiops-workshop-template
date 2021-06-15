@@ -14,9 +14,6 @@ jobs:
     - name: Generate Kong declarative configuration from Spec
       run: |
         /bin/sh -c 'inso generate config ./specs/orders.yaml --type declarative > /tmp/kong_orig.yaml'
-    - name: Add workspace to Declarative Config
-      run: |
-        /bin/sh -c 'cat ./specs/workspace.yaml /tmp/kong_orig.yaml > /tmp/kong.yaml'
     - name: Validate Kong declarative configuration
       run: |
         /bin/sh -c 'pushd /tmp && deck validate'
