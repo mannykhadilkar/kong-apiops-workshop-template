@@ -1,0 +1,28 @@
+name: Action on Push to generate, validate and push config to Kong; Publish to Dev Portal
+
+on:
+  push:
+    branches: 
+      - master
+jobs:
+  deploy_to_kong:
+    runs-on: self-hosted
+    name: Action on Push to generate, validate and push config to Kong; Publish to Dev Portal
+    steps:        
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Generate Kong declarative configuration from Spec
+      run: |
+        /bin/sh -c 'inso generate config ./specs/orders.yaml --type declarative > /tmp/kong_orig.yaml'
+    - name: Add workspace to Declarative Config
+      run: |
+        /bin/sh -c 'cat ./specs/workspace.yaml /tmp/kong_orig.yaml > /tmp/kong.yaml'
+    - name: Deploy declarative config to Workspace
+      run: |
+        /bin/sh -c 'pushd /tmp && deck sync'
+    - name: Enable Dev Portal on Workspace
+      run: |
+        /bin/sh -c 'pushd ./specs && http -f --ignore-stdin PATCH :8001/workspaces/ProductX config.portal=true'
+    - name: Publish Spec to Dev Portal
+      run: |
+        /bin/sh -c 'pushd ./specs && http --check-status --ignore-stdin PUT :8001/ProductX/files/specs/orders.yaml contents=@orders.yaml'
