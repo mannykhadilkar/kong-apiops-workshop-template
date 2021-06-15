@@ -13,16 +13,13 @@ jobs:
       uses: actions/checkout@v2
     - name: Generate Kong declarative configuration from Spec
       run: |
-        /bin/sh -c 'inso generate config ./specs/orders.yaml --type declarative > /tmp/kong_orig.yaml'
-    - name: Add workspace to Declarative Config
+        /bin/sh -c 'inso generate config ./specs/orders.yaml --type declarative > /tmp/kong.yaml'
+    - name: Validate Kong declarative configuration
       run: |
-        /bin/sh -c 'cat ./specs/workspace.yaml /tmp/kong_orig.yaml > /tmp/kong.yaml'
-    - name: Deploy declarative config to Workspace
+        /bin/sh -c 'pushd /tmp && deck validate'
+    - name: Deploy declarative config
       run: |
         /bin/sh -c 'pushd /tmp && deck sync'
-    - name: Enable Dev Portal on Workspace
-      run: |
-        /bin/sh -c 'pushd ./specs && http -f --ignore-stdin PATCH :8001/workspaces/ProductX config.portal=true'
     - name: Publish Spec to Dev Portal
       run: |
-        /bin/sh -c 'pushd ./specs && http --check-status --ignore-stdin PUT :8001/ProductX/files/specs/orders.yaml contents=@orders.yaml'
+        /bin/sh -c 'pushd ./specs && http --check-status --ignore-stdin PUT :8001/default/files/specs/orders.yaml contents=@orders.yaml'
