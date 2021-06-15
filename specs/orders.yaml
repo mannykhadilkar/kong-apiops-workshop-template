@@ -16,25 +16,6 @@ paths:
       summary: Fetches an order
       tags:
         - order
-      x-kong-plugin-rate-limiting-advanced:
-        enabled: true
-        config:
-          limit:
-          - 3
-          window_size:
-          - 10
-          sync_rate: -1
-          strategy: cluster
-          window_type: sliding
-      x-kong-plugin-openid-connect:
-        enabled: true
-        config:
-          issuer: https://dev-504059.okta.com/oauth2/default/.well-known/openid-configuration
-          consumer_optional: true
-          auth_methods:
-          - client_credentials
-          scopes: []
-          verify_parameters: false
       x-kong-plugin-mocking:
         enabled: true
         config:
